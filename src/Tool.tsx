@@ -3,7 +3,7 @@ import { themes, ThemeVars } from '@storybook/theming';
 import { IconButton } from '@storybook/components';
 import {
   STORY_CHANGED,
-  STORIES_CONFIGURED,
+  SET_STORIES,
   DOCS_RENDERED
 } from '@storybook/core-events';
 import { API, useParameter } from '@storybook/api';
@@ -127,7 +127,6 @@ export const DarkMode = ({ api }: DarkModeProps) => {
   const setMode = React.useCallback(
     (mode: Mode) => {
       const currentStore = store();
-      console.log('set', mode);
       api.setOptions({ theme: currentStore[mode] });
       setDark(mode === 'dark');
       api.getChannel().emit(DARK_MODE_EVENT_NAME, mode === 'dark');
@@ -168,13 +167,13 @@ export const DarkMode = ({ api }: DarkModeProps) => {
     const channel = api.getChannel();
 
     channel.on(STORY_CHANGED, renderTheme);
-    channel.on(STORIES_CONFIGURED, renderTheme);
+    channel.on(SET_STORIES, renderTheme);
     channel.on(DOCS_RENDERED, renderTheme);
     prefersDark.addListener(prefersDarkUpdate);
 
     return () => {
       channel.removeListener(STORY_CHANGED, renderTheme);
-      channel.removeListener(STORIES_CONFIGURED, renderTheme);
+      channel.removeListener(SET_STORIES, renderTheme);
       channel.removeListener(DOCS_RENDERED, renderTheme);
       prefersDark.removeListener(prefersDarkUpdate);
     };
